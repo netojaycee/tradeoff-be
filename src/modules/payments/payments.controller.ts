@@ -27,6 +27,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums';
+import { Public } from '@/common/decorators/public.decorator';
 
 /**
  * Payments Controller
@@ -77,6 +78,7 @@ export class PaymentsController {
    * Receives payment notifications from PayStack
    */
   @Post('webhook/paystack')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async paystackWebhook(
     @Req() req: RawBodyRequest<Request>,
