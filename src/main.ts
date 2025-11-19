@@ -27,6 +27,7 @@ async function bootstrap() {
       'http://localhost:3049',
       'http://192.168.1.135:3049',
       'http://localhost:3001',
+      'https://tradeoff-nine.vercel.app',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
