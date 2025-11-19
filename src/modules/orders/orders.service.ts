@@ -415,6 +415,68 @@ export class OrdersService {
   }
 
   /**
+   * Get order by order number with all items
+   */
+  async findByOrderNumber(
+    orderNumber: string,
+    userId?: string,
+    userRole?: string,
+  ): Promise<OrderResponseDto> {
+    try {
+      if (!orderNumber || orderNumber.trim().length === 0) {
+        throw new BadRequestException('Order number is required');
+      }
+
+      const [order, orderItems] = await Promise.all([
+        this.orderModel
+          .findOne({ orderNumber: orderNumber.trim() })
+          .populate('buyerId', 'firstName lastName email')
+          .populate('sellerIds', 'firstName lastName email')
+          .lean()
+          .exec(),
+        this.orderItemModel
+          .find({ orderNumber: orderNumber.trim() })
+          .lean()
+          .exec(),
+      ]);
+
+      if (!order) {
+        throw new NotFoundException(
+          `Order with number ${orderNumber} not found`,
+        );
+      }
+
+      // Check access permissions
+      if (userRole !== 'admin' && userId) {
+        const canAccess =
+          order.buyerId._id?.toString() === userId ||
+          order.sellerIds.some(
+            (seller: any) => seller._id?.toString() === userId,
+          );
+
+        if (!canAccess) {
+          throw new ForbiddenException(
+            'You do not have permission to view this order',
+          );
+        }
+      }
+
+      return this.mapOrderToResponseDto(order, orderItems);
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Failed to fetch order: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
    * Update order status
    */
   async updateStatus(

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Payment, PaymentSchema } from './entities/payment.entity';
 import { Order, OrderSchema } from '../orders/entities/order.entity';
@@ -13,7 +13,7 @@ import { OrdersModule } from '../orders/orders.module';
       { name: Payment.name, schema: PaymentSchema },
       { name: Order.name, schema: OrderSchema },
     ]),
-    OrdersModule,
+    forwardRef(() => OrdersModule),
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService, PayStackService],

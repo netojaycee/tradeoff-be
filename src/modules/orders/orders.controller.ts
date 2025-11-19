@@ -12,6 +12,8 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import {
@@ -26,11 +28,14 @@ import {
   OrderResponseDto,
   PaginatedOrdersResponseDto,
   ProcessSellerPayoutDto,
+  CreateOrderResponseDto,
 } from './dto/order.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums';
+import { PaymentsService } from '../payments/payments.service';
+import { PaymentGateway } from '../payments/entities/payment.entity';
 
 /**
  * Orders Controller
@@ -39,7 +44,11 @@ import { UserRole } from '@/common/enums';
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    @Inject(forwardRef(() => PaymentsService))
+    private readonly paymentsService: PaymentsService,
+  ) {}
 
   /**
    * Calculate order totals (cart calculation)
@@ -56,17 +65,71 @@ export class OrdersController {
   }
 
   /**
-   * Create a new order
+   * Create a new order with automatic payment initialization
    * POST /orders
+   * Returns order details + payment authorization URL for redirect
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createOrderDto: CreateOrderDto,
     @Request() req,
-  ): Promise<OrderResponseDto> {
+  ): Promise<CreateOrderResponseDto> {
     const buyerId = req.user.sub;
-    return this.ordersService.create(createOrderDto, buyerId);
+    const origin = req.get('origin');
+
+    // Step 1: Create order
+    const order = await this.ordersService.create(createOrderDto, buyerId);
+
+    // Step 2: If payment method provided, initialize payment
+    if (createOrderDto.paymentMethod) {
+      try {
+        const callbackUrl = `${origin}/checkout?ordno=${order.orderNumber}`;
+        const paymentResponse = await this.paymentsService.initializePayment(
+          {
+            orderId: order.id,
+            gateway: this.mapPaymentMethodToGateway(
+              createOrderDto.paymentMethod,
+            ),
+            callbackUrl,
+          },
+          buyerId,
+          origin,
+        );
+
+        return {
+          order,
+          payment: {
+            reference: paymentResponse.data.reference,
+            authorizationUrl: paymentResponse.data.authorizationUrl,
+            accessCode: paymentResponse.data.accessCode,
+            amount: paymentResponse.data.amount,
+            currency: paymentResponse.data.currency,
+            paymentMethod: createOrderDto.paymentMethod,
+          },
+        };
+      } catch (error) {
+        // Order created but payment init failed - return order only
+        console.error('Payment initialization failed:', error);
+        return { order };
+      }
+    }
+
+    return { order };
+  }
+
+  /**
+   * Map payment method string to PaymentGateway enum
+   */
+  private mapPaymentMethodToGateway(
+    method: 'paystack' | 'flutterwave' | 'stripe',
+  ): PaymentGateway {
+    const mapping: Record<string, PaymentGateway> = {
+      paystack: PaymentGateway.PAYSTACK,
+      flutterwave: PaymentGateway.FLUTTERWAVE,
+      stripe: PaymentGateway.STRIPE,
+    };
+    return mapping[method] || PaymentGateway.PAYSTACK;
   }
 
   /**
@@ -129,6 +192,25 @@ export class OrdersController {
     const userId = req.user.sub;
     const userRole = req.user.role;
     return this.ordersService.findById(orderId, userId, userRole);
+  }
+
+  /**
+   * Get order by order number
+   * GET /orders/number/:orderNumber
+   */
+  @Get('number/:orderNumber')
+  @HttpCode(HttpStatus.OK)
+  async findByOrderNumber(
+    @Param('orderNumber') orderNumber: string,
+    @Request() req,
+  ): Promise<OrderResponseDto> {
+    if (!orderNumber || orderNumber.trim().length === 0) {
+      throw new BadRequestException('Order number parameter is required');
+    }
+
+    const userId = req.user.sub;
+    const userRole = req.user.role;
+    return this.ordersService.findByOrderNumber(orderNumber, userId, userRole);
   }
 
   /**

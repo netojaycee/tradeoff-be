@@ -100,7 +100,15 @@ export class CreateOrderDto {
   @IsOptional()
   couponCode?: string; // Discount coupon if available
 
-  // Payment will be handled separately via payment service
+  // Payment details
+  @IsEnum(['paystack', 'flutterwave', 'stripe'])
+  @IsOptional()
+  paymentMethod?: 'paystack' | 'flutterwave' | 'stripe' = 'paystack';
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  paymentNote?: string;
 }
 
 /**
@@ -408,4 +416,19 @@ export class ProcessSellerPayoutDto {
   @IsOptional()
   @MaxLength(500)
   notes?: string;
+}
+
+/**
+ * Response DTO for unified order creation with payment
+ */
+export class CreateOrderResponseDto {
+  order: OrderResponseDto;
+  payment?: {
+    reference: string;
+    authorizationUrl: string;
+    accessCode?: string;
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+  };
 }
