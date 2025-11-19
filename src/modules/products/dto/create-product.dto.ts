@@ -17,7 +17,7 @@ import {
   ProductCondition,
   Gender,
   AuthenticationStatus,
-} from 'src/common/enums/product.enum';
+} from '@/common/enums/product.enum';
 
 /**
  * DTO for shipping information

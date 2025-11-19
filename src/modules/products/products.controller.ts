@@ -23,7 +23,7 @@ import {
   ProductResponseDto,
 } from './dto/query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '@/common/decorators/public.decorator';
 
 /**
  * Products Controller

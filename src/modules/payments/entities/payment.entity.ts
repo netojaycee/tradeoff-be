@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { PaymentStatus, PaymentMethod } from 'src/common/enums/order.enum';
+import { PaymentStatus, PaymentMethod } from '@/common/enums/order.enum';
 
 export type PaymentDocument = Payment & Document;
 

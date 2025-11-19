@@ -1,3 +1,4 @@
+import { Gender } from '@/common/enums';
 import {
   IsString,
   IsOptional,
@@ -7,7 +8,6 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
-import { Gender } from 'src/common/enums/product.enum';
 
 /**
  * DTO for creating a new category

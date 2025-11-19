@@ -5,7 +5,7 @@ import {
   UserStatus,
   SellerStatus,
   VerificationStatus,
-} from 'src/common/enums';
+} from '@/common/enums';
 
 export type UserDocument = User & Document;
 

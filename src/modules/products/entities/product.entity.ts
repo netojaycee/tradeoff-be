@@ -5,7 +5,7 @@ import {
   ProductCondition,
   AuthenticationStatus,
   Gender,
-} from 'src/common/enums/product.enum';
+} from '@/common/enums/product.enum';
 
 export type ProductDocument = Product & Document;
 

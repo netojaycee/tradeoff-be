@@ -21,10 +21,10 @@ import {
   PaginatedSubcategoryResponseDto,
 } from './dto/query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user.enum';
+import { Public } from '@/common/decorators/public.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { UserRole } from '@/common/enums/user.enum';
 
 /**
  * Subcategories Controller

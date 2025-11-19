@@ -4,7 +4,7 @@ import {
   OrderStatus,
   PaymentStatus,
   PaymentMethod,
-} from 'src/common/enums/order.enum';
+} from '@/common/enums/order.enum';
 
 export type OrderDocument = Order & Document;
 

@@ -24,7 +24,7 @@ import {
   RefundPaymentDto,
   PaymentResponseDto,
 } from './dto/payment.dto';
-import { PaymentStatus, PaymentMethod } from 'src/common/enums/order.enum';
+import { PaymentStatus, PaymentMethod } from '@/common/enums/order.enum';
 
 @Injectable()
 export class PaymentsService {

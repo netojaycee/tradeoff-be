@@ -19,7 +19,7 @@ import {
   PaginatedOrdersResponseDto,
   ProcessSellerPayoutDto,
 } from './dto/order.dto';
-import { OrderStatus, PaymentStatus } from 'src/common/enums/order.enum';
+import { OrderStatus, PaymentStatus } from '@/common/enums/order.enum';
 import { Order, OrderDocument } from './entities/order.entity';
 import { OrderItem, OrderItemDocument } from './entities/order-item.entity';
 import { Product, ProductDocument } from '../products/entities/product.entity';

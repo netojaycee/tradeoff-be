@@ -12,7 +12,7 @@ import {
   ProductStatus,
   Gender,
   AuthenticationStatus,
-} from 'src/common/enums/product.enum';
+} from '@/common/enums/product.enum';
 import { Transform } from 'class-transformer';
 
 /**

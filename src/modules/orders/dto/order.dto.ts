@@ -11,7 +11,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { OrderStatus } from 'src/common/enums/order.enum';
+import { OrderStatus } from '@/common/enums/order.enum';
 
 /**
  * DTO for shipping address
