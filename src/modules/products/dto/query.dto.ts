@@ -253,6 +253,7 @@ export class ProductResponseDto {
   updatedAt: Date;
   likedBy?: string[];
   savedBy?: string[];
+  isVerified: boolean;
 }
 
 /**

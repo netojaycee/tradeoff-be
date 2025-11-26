@@ -746,6 +746,7 @@ export class ProductsService {
       lastViewedAt: product.lastViewedAt,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
+      isVerified: product.isVerified,
     };
   }
 }

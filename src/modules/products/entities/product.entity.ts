@@ -50,6 +50,9 @@ export class Product {
   @Prop({ default: false })
   isVerifiedSeller: boolean;
 
+  @Prop({ default: false })
+  isVerified: boolean;
+
   // Pricing
   @Prop({ required: true })
   originalPrice: number;
